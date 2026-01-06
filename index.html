@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Solo Music</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;background:#000;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+  height:100vh;display:flex;justify-content:center;align-items:center
+}
+.app{
+  width:92vw;max-width:420px;
+  background:#0b0b0b;border-radius:24px;padding:16px;position:relative
+}
+.art{
+  width:100%;aspect-ratio:1;background:#222;
+  border-radius:18px;margin-bottom:12px;
+  background-size:cover;background-position:center
+}
+h2{text-align:center;margin:6px 0 2px}
+p{text-align:center;color:#aaa;margin:0;font-size:13px}
+.controls{display:flex;justify-content:center;gap:14px;margin:18px 0}
+.btn{
+  width:52px;height:52px;border-radius:50%;
+  border:none;background:#fff;color:#000;font-size:18px
+}
+.btn:active{transform:scale(.9)}
+.input{
+  width:100%;padding:14px;border-radius:14px;
+  border:none;background:#141414;color:#fff
+}
+.queue{text-align:center;font-size:12px;color:#888;margin-top:6px}
+iframe{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+  <div class="art" id="art"></div>
+
+  <h2 id="title">Solo Music</h2>
+  <p id="artist">Paste YouTube Link</p>
+
+  <div class="controls">
+    <button class="btn" onclick="prev()">⏮</button>
+    <button class="btn" onclick="play()">▶</button>
+    <button class="btn" onclick="pause()">❚❚</button>
+    <button class="btn" onclick="next()">⏭</button>
+  </div>
+
+  <input class="input" id="link" placeholder="Paste YouTube link & press Enter"
+    onkeydown="if(event.key==='Enter')add()">
+
+  <div class="queue" id="queue"></div>
+  <div id="player"></div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+let player,queue=[],index=-1;
+
+function haptic(){if(navigator.vibrate)navigator.vibrate(10);}
+
+function onYouTubeIframeAPIReady(){
+  player=new YT.Player("player",{height:"0",width:"0",
+    events:{onStateChange:e=>{if(e.data===YT.PlayerState.ENDED)next();}}
+  });
+}
+
+function extractId(url){
+  const m=url.match(/(youtu\.be\/|v=)([^&]+)/);
+  return m?m[2]:null;
+}
+
+function add(){
+  const url=document.getElementById("link").value.trim();
+  const id=extractId(url);
+  if(!id)return;
+  queue.push(id);
+  if(index===-1){index=0;load(id);}
+  update();
+}
+
+function load(id){
+  haptic();
+  player.loadVideoById(id);
+  document.getElementById("title").innerText="Playing";
+  document.getElementById("artist").innerText="YouTube Audio";
+}
+
+function play(){if(player)player.playVideo();}
+function pause(){if(player)player.pauseVideo();}
+function prev(){if(index>0){index--;load(queue[index]);}}
+function next(){if(index<queue.length-1){index++;load(queue[index]);}}
+
+function update(){
+  document.getElementById("queue").innerText=
+    queue.length?`Queue ${index+1}/${queue.length}`:"";
+}
+</script>
+
+</body>
+</html>
