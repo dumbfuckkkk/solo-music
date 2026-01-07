@@ -3,48 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <title>Solo Music</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 
 <style>
-:root{
-  --bg:#ffffff;
-  --card:#f5f5f7;
-  --text:#000;
-  --muted:#777;
-  --accent:#ff2d55;
-}
-
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
-  background:var(--bg);
-  color:var(--text);
+  background:#fff;
+  color:#000;
 }
-
-/* HEADER */
 header{
   padding:16px;
   font-size:28px;
   font-weight:700;
 }
-
-/* SEARCH */
-.searchBox{
+.search{
   padding:0 16px 12px;
 }
-.searchBox input{
+.search input{
   width:100%;
   padding:14px;
   font-size:16px;
   border-radius:12px;
   border:1px solid #ddd;
 }
-
-/* LIST */
 .list{
-  padding:0 16px 160px;
+  padding:0 16px 120px;
 }
 .item{
   display:flex;
@@ -61,26 +46,21 @@ header{
   font-size:14px;
 }
 .item small{
-  color:var(--muted);
+  color:#666;
 }
-
-/* MINI PLAYER */
-.miniPlayer{
+.player{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
   background:#fff;
   border-top:1px solid #ddd;
-  padding:8px 12px;
-}
-.nowTitle{
-  font-size:14px;
-  margin-bottom:6px;
+  padding:8px;
+  display:none;
 }
 iframe{
   width:100%;
-  height:60px;
+  height:200px;
   border:none;
 }
 </style>
@@ -90,23 +70,22 @@ iframe{
 
 <header>Search</header>
 
-<div class="searchBox">
-  <input id="query" placeholder="Search music and press Enter">
+<div class="search">
+  <input id="q" placeholder="Search music and press Enter">
 </div>
 
 <div class="list" id="results"></div>
 
-<div class="miniPlayer" id="player" style="display:none">
-  <div class="nowTitle" id="nowTitle"></div>
+<div class="player" id="player">
   <iframe id="yt"></iframe>
 </div>
 
 <script>
-/* 🔑 YOUR API KEY */
+/* 🔑 PUT YOUR REAL API KEY HERE */
 const API_KEY = "AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
 
 /* SEARCH INPUT */
-document.getElementById("query").addEventListener("keydown", e=>{
+document.getElementById("q").addEventListener("keydown", e=>{
   if(e.key==="Enter"){
     search(e.target.value);
   }
@@ -115,17 +94,14 @@ document.getElementById("query").addEventListener("keydown", e=>{
 /* SEARCH FUNCTION */
 function search(q){
   fetch(
-    "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q="
+    "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q="
     + encodeURIComponent(q)
     + "&key=" + API_KEY
   )
   .then(r=>r.json())
   .then(d=>{
     results.innerHTML = d.items.map(v=>`
-      <div class="item" onclick="play(
-        '${v.id.videoId}',
-        '${v.snippet.title.replace(/'/g,"")}'
-      )">
+      <div class="item" onclick="play('${v.id.videoId}')">
         <img src="${v.snippet.thumbnails.medium.url}">
         <div>
           <b>${v.snippet.title}</b>
@@ -133,14 +109,16 @@ function search(q){
         </div>
       </div>
     `).join('');
+  })
+  .catch(err=>{
+    alert("API error — check key");
   });
 }
 
-/* PLAY FUNCTION */
-function play(id,title){
+/* PLAY — USER INITIATED */
+function play(id){
   player.style.display="block";
-  nowTitle.innerText = title;
-  yt.src = "https://www.youtube.com/embed/" + id + "?autoplay=1";
+  yt.src = "https://www.youtube.com/embed/" + id;
 }
 </script>
 
