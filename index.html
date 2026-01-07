@@ -3,357 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <title>Solo Music</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 
 <style>
 :root{
-  --bg:#000;
-  --panel:#111;
-  --panel2:#1a1a1a;
-  --text:#fff;
-  --muted:#888;
+  --bg:#ffffff;
+  --card:#f5f5f7;
+  --text:#000;
+  --muted:#777;
+  --accent:#ff2d55;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+*{box-sizing:border-box}
 body{
   margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
   background:var(--bg);
   color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+  height:100vh;
+  overflow:hidden;
 }
-.hidden{display:none}
-main{padding-bottom:160px}
 
-/* Typography */
-h1{font-size:30px;margin:0}
-h2{font-size:24px;margin:0 0 12px}
-h3{font-size:16px;margin:12px 0 6px}
-.muted{color:var(--muted);font-size:13px}
-
-/* Cards */
-.section{padding:16px}
-.card{
-  background:var(--panel);
-  border-radius:18px;
+/* HEADER */
+header{
   padding:16px;
-  margin-bottom:16px;
+  font-size:28px;
+  font-weight:700;
 }
 
-/* Albums */
-.row{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
+/* MAIN VIEW */
+main{
+  position:absolute;
+  top:64px;
+  bottom:120px;
+  left:0;
+  right:0;
+  overflow-y:auto;
 }
-.album{
-  width:140px;
-  flex:none;
-}
-.album img{
-  width:140px;
-  height:140px;
-  border-radius:14px;
-  object-fit:cover;
-}
-.album div{font-size:13px;margin-top:4px}
 
-/* Inputs */
-input{
+/* SEARCH */
+.searchBox{
+  padding:0 16px 12px;
+}
+.searchBox input{
   width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  background:#222;
-  color:#fff;
-  font-size:15px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
 }
 
-/* Mini Player */
-#mini{
-  position:fixed;
-  left:0;right:0;
-  bottom:64px;
-  height:64px;
-  background:var(--panel2);
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px 14px;
-  transition:transform .25s ease;
-}
-#mini:active{transform:scale(.97)}
-#mini img{
-  width:44px;height:44px;
-  border-radius:8px;
-}
-#mini .info{flex:1}
-#mini button{
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:20px;
-}
-
-/* Tabs */
-#tabs{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  height:64px;
-  display:flex;
-  background:#000;
-  border-top:1px solid #111;
-}
-#tabs button{
-  flex:1;
-  border:none;
-  background:none;
-  color:#aaa;
-  font-size:12px;
-}
-#tabs button.active{color:#fff}
-
-/* Now Playing */
-#now{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  flex-direction:column;
-  padding:20px;
-  animation:slideUp .35s cubic-bezier(.22,.61,.36,1);
-}
-@keyframes slideUp{
-  from{transform:translateY(100%)}
-  to{transform:translateY(0)}
-}
-#now img{
-  width:100%;
-  border-radius:18px;
-  margin-bottom:20px;
-  box-shadow:0 30px 60px rgba(0,0,0,.6);
-}
-
-/* Progress */
-#progress{
-  width:100%;
-  height:4px;
-  background:#222;
-  border-radius:4px;
-  overflow:hidden;
-  margin:12px 0;
-}
-#bar{
-  height:100%;
-  width:0%;
-  background:#fff;
-}
-
-/* Controls */
-#controls{
-  display:flex;
-  justify-content:center;
-  gap:28px;
-  margin-top:20px;
-}
-#controls button{
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  border:none;
-  font-size:22px;
-}
-
-/* Library */
+/* LIST */
 .list{
-  background:var(--panel);
-  border-radius:16px;
-  overflow:hidden;
+  padding:0 16px;
 }
 .item{
   display:flex;
   gap:12px;
-  padding:12px;
-  border-bottom:1px solid #222;
+  margin-bottom:14px;
 }
 .item img{
-  width:48px;
-  height:48px;
-  border-radius:8px;
+  width:60px;
+  height:60px;
+  border-radius:10px;
 }
-.item:last-child{border-bottom:none}
+.item b{
+  font-size:14px;
+}
+.item small{
+  color:var(--muted);
+}
 
-/* Search */
-.searchbox{margin-bottom:16px}
+/* MINI PLAYER */
+.miniPlayer{
+  position:fixed;
+  bottom:60px;
+  left:0;
+  right:0;
+  background:#fff;
+  border-top:1px solid #ddd;
+  padding:8px 12px;
+  display:none;
+  align-items:center;
+  gap:10px;
+}
+.miniPlayer img{
+  width:40px;
+  height:40px;
+  border-radius:6px;
+}
+.miniPlayer span{
+  flex:1;
+  font-size:14px;
+}
+
+/* FULL PLAYER */
+.player{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  display:none;
+  flex-direction:column;
+}
+.player img{
+  width:80%;
+  margin:40px auto 20px;
+  border-radius:16px;
+}
+.player h2{
+  text-align:center;
+  padding:0 16px;
+}
+.playerControls{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  font-size:28px;
+  margin-top:20px;
+}
+
+/* IFRAME */
+iframe{
+  display:none;
+}
+
+/* TABS */
+.tabs{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  background:#fff;
+  border-top:1px solid #ddd;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:10px 0;
+  font-size:12px;
+  color:var(--muted);
+}
+.tab.active{
+  color:var(--accent);
+}
 </style>
 </head>
 
 <body>
 
-<!-- BROWSE -->
-<main id="browse">
-  <div class="section">
-    <h1>Browse</h1>
+<header id="title">Search</header>
 
-    <div class="card" style="padding:0;overflow:hidden">
-      <img src="https://picsum.photos/600/400?music">
-      <div style="padding:14px">
-        <h3>Top Hits</h3>
-        <p class="muted">Updated daily</p>
-      </div>
-    </div>
-
-    <h3>Fresh Cuts</h3>
-    <div class="row">
-      <div class="album"><img src="https://picsum.photos/200?1"><div>Album</div></div>
-      <div class="album"><img src="https://picsum.photos/200?2"><div>Album</div></div>
-      <div class="album"><img src="https://picsum.photos/200?3"><div>Album</div></div>
-    </div>
-
-    <div class="card">
-      <p class="muted">Paste YouTube link</p>
-      <input id="link" placeholder="YouTube link"
-        onkeydown="if(event.key==='Enter')add()">
-    </div>
-  </div>
-</main>
-
-<!-- LIBRARY -->
-<main id="library" class="hidden">
-  <div class="section">
-    <h1>Library</h1>
-    <div id="libraryList" class="list"></div>
-  </div>
-</main>
-
-<!-- SEARCH -->
-<main id="search" class="hidden">
-  <div class="section">
-    <h1>Search</h1>
-    <input class="searchbox" placeholder="Paste YouTube link"
-      onkeydown="if(event.key==='Enter')add()">
-    <p class="muted">Search UI ready. API can be added later.</p>
-  </div>
-</main>
+<main id="view"></main>
 
 <!-- MINI PLAYER -->
-<div id="mini" onclick="openNow()">
-  <img id="thumb">
-  <div class="info">
-    <div id="title">Not Playing</div>
-    <div class="muted">Solo Music</div>
-  </div>
-  <button onclick="event.stopPropagation();toggle()">▶</button>
+<div class="miniPlayer" id="mini" onclick="openPlayer()">
+  <img id="miniImg">
+  <span id="miniTitle"></span>
 </div>
+
+<!-- FULL PLAYER -->
+<div class="player" id="player">
+  <img id="playerImg">
+  <h2 id="playerTitle"></h2>
+  <div class="playerControls">
+    <span onclick="closePlayer()">⬇️</span>
+    <span onclick="togglePlay()">⏯</span>
+  </div>
+</div>
+
+<iframe id="yt"></iframe>
 
 <!-- TABS -->
-<div id="tabs">
-  <button class="active" onclick="show('browse')">Browse</button>
-  <button onclick="show('library')">Library</button>
-  <button onclick="show('search')">Search</button>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('search')">Search</div>
+  <div class="tab" onclick="switchTab('library')">Library</div>
+  <div class="tab" onclick="switchTab('player')">Now Playing</div>
 </div>
 
-<!-- NOW PLAYING -->
-<div id="now"
- ontouchstart="startY=event.touches[0].clientY"
- ontouchmove="moveNow(event)">
-  <img id="nowArt">
-  <h2 id="nowTitle">Playing</h2>
-  <div id="progress"><div id="bar"></div></div>
-  <div id="controls">
-    <button onclick="prev()">⏮</button>
-    <button onclick="toggle()">▶</button>
-    <button onclick="next()">⏭</button>
-  </div>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player;
-let queue=JSON.parse(localStorage.getItem("queue")||"[]");
-let index=parseInt(localStorage.getItem("index")||"-1");
-let playing=false,startY=0;
+const API_KEY = "AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
 
-function h(){navigator.vibrate&&navigator.vibrate(8)}
+let current = null;
+let playing = false;
 
-function onYouTubeIframeAPIReady(){
-  player=new YT.Player(document.createElement("div"),{
-    events:{onStateChange:e=>playing=e.data===1}
+/* TAB SYSTEM */
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  title.innerText = tab === 'search' ? 'Search' : tab === 'library' ? 'Library' : 'Now Playing';
+
+  if(tab==='search') renderSearch();
+  if(tab==='library') renderLibrary();
+  if(tab==='player') openPlayer();
+}
+
+/* SEARCH VIEW */
+function renderSearch(){
+  view.innerHTML = `
+    <div class="searchBox">
+      <input placeholder="Search music" onkeydown="if(event.key==='Enter')search(this.value)">
+    </div>
+    <div class="list" id="results"></div>
+  `;
+}
+
+/* SEARCH LOGIC */
+function search(q){
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q=${encodeURIComponent(q)}&key=${API_KEY}`)
+  .then(r=>r.json())
+  .then(d=>{
+    results.innerHTML = d.items.map(v=>`
+      <div class="item" onclick='play(${JSON.stringify(v.snippet)}, "${v.id.videoId}")'>
+        <img src="${v.snippet.thumbnails.medium.url}">
+        <div>
+          <b>${v.snippet.title}</b>
+          <small>${v.snippet.channelTitle}</small>
+        </div>
+      </div>
+    `).join('');
   });
-  if(index>=0)load();
-  setInterval(updateProgress,500);
 }
 
-function extract(u){
-  let m=u.match(/(v=|be\/)([^&]+)/);
-  return m&&m[2];
+/* PLAY */
+function play(snippet,id){
+  current = {snippet,id};
+  yt.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  mini.style.display="flex";
+  miniImg.src = snippet.thumbnails.medium.url;
+  miniTitle.innerText = snippet.title;
+  playerImg.src = snippet.thumbnails.high.url;
+  playerTitle.innerText = snippet.title;
+  playing = true;
 }
 
-function add(){
-  let v=extract(link.value);
-  if(!v)return;
-  queue.push(v);
-  if(index<0)index=0;
-  save();load();renderLibrary();
+/* PLAYER */
+function openPlayer(){ player.style.display="flex"; }
+function closePlayer(){ player.style.display="none"; }
+function togglePlay(){
+  yt.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');
 }
 
-function load(){
-  let v=queue[index];
-  let img=`https://img.youtube.com/vi/${v}/hqdefault.jpg`;
-  thumb.src=nowArt.src=img;
-  title.innerText=nowTitle.innerText="YouTube Audio";
-  player.loadVideoById(v);
-  save();h();
-}
-
-function toggle(){playing?player.pauseVideo():player.playVideo();h()}
-function next(){if(index<queue.length-1){index++;load()}}
-function prev(){if(index>0){index--;load()}}
-function openNow(){now.style.display="flex"}
-function moveNow(e){
-  let dy=e.touches[0].clientY-startY;
-  now.style.transform=`translateY(${dy}px)`;
-  if(dy>120){
-    now.style.display="none";
-    now.style.transform="translateY(0)";
-    h();
-  }
-}
-
-function save(){
-  localStorage.setItem("queue",JSON.stringify(queue));
-  localStorage.setItem("index",index);
-}
-
-function show(id){
-  browse.classList.add("hidden");
-  library.classList.add("hidden");
-  search.classList.add("hidden");
-  document.getElementById(id).classList.remove("hidden");
-  [...tabs.children].forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-}
-
+/* LIBRARY */
 function renderLibrary(){
-  libraryList.innerHTML="";
-  queue.forEach(v=>{
-    let img=`https://img.youtube.com/vi/${v}/default.jpg`;
-    libraryList.innerHTML+=`
-      <div class="item">
-        <img src="${img}">
-        <div>YouTube Audio</div>
-      </div>`;
-  });
+  view.innerHTML = `<p style="padding:16px;color:#777">History coming next</p>`;
 }
 
-function updateProgress(){
-  if(!player||!playing)return;
-  let d=player.getDuration();
-  let c=player.getCurrentTime();
-  bar.style.width=(c/d*100)+"%";
-}
-
-renderLibrary();
+/* INIT */
+renderSearch();
 </script>
 
 </body>
