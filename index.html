@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Solo Music</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 
 <style>
@@ -13,137 +13,189 @@ body{
   background:#fff;
   color:#000;
 }
-
 .app{
   max-width:420px;
   margin:auto;
+  padding-bottom:90px;
 }
-
 header{
-  padding:16px;
   font-size:28px;
   font-weight:700;
+  padding:16px;
 }
-
 .search{
   padding:0 16px 12px;
 }
-
 .search input{
   width:100%;
   padding:14px;
-  border-radius:12px;
+  border-radius:14px;
   border:none;
   background:#f2f2f2;
   font-size:16px;
 }
-
 .list{
   padding:0 16px;
 }
-
 .item{
   display:flex;
   gap:12px;
-  margin-bottom:14px;
-  cursor:pointer;
+  padding:10px 0;
 }
-
 .item img{
-  width:64px;
-  height:64px;
-  border-radius:8px;
+  width:60px;
+  height:60px;
+  border-radius:10px;
 }
-
-.item div{
-  flex:1;
-}
-
 .title{
-  font-size:15px;
   font-weight:600;
+  font-size:15px;
 }
-
 .artist{
   font-size:13px;
   color:#666;
 }
 
-.player{
+/* MINI PLAYER */
+.mini{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
   background:#fff;
   border-top:1px solid #ddd;
-  padding:10px;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.mini img{
+  width:44px;
+  height:44px;
+  border-radius:6px;
+}
+.mini button{
+  margin-left:auto;
+  font-size:22px;
+  border:none;
+  background:none;
 }
 
+/* FULL PLAYER */
+.full{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  display:none;
+  flex-direction:column;
+}
+.full header{
+  font-size:18px;
+  padding:16px;
+}
+.art{
+  width:80%;
+  margin:20px auto;
+  border-radius:14px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  font-size:32px;
+}
 iframe{
-  width:100%;
-  height:60px;
-  border:none;
+  display:none;
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
   <header>Search</header>
-
   <div class="search">
-    <input id="q" placeholder="Search music…" />
+    <input id="q" placeholder="Search music">
   </div>
-
   <div class="list" id="results"></div>
 </div>
 
-<div class="player">
-  <iframe id="player"
-    src=""
-    allow="autoplay"
-    allowfullscreen>
-  </iframe>
+<!-- MINI PLAYER -->
+<div class="mini" id="mini" style="display:none">
+  <img id="miniArt">
+  <div>
+    <div id="miniTitle" class="title"></div>
+    <div id="miniArtist" class="artist"></div>
+  </div>
+  <button onclick="openFull()">▶</button>
 </div>
 
+<!-- FULL PLAYER -->
+<div class="full" id="full">
+  <header onclick="closeFull()">Now Playing</header>
+  <img id="fullArt" class="art">
+  <div class="title" id="fullTitle" style="text-align:center"></div>
+  <div class="artist" id="fullArtist" style="text-align:center"></div>
+  <div class="controls">
+    ⏮ ▶ ⏭
+  </div>
+</div>
+
+<iframe id="player" allow="autoplay"></iframe>
+
 <script>
-const API_KEY = "AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
+const API_KEY="AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
 
-const q = document.getElementById("q");
-const results = document.getElementById("results");
-const player = document.getElementById("player");
+const q=document.getElementById("q");
+const results=document.getElementById("results");
+const player=document.getElementById("player");
 
-q.addEventListener("keydown", e=>{
+let current=null;
+
+q.onkeydown=e=>{
   if(e.key==="Enter") search(q.value);
-});
+};
 
 function search(term){
-  fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(term)}&key=${API_KEY}`
-  )
-  .then(r=>r.json())
-  .then(d=>{
-    results.innerHTML="";
-    d.items.forEach(v=>{
-      const div=document.createElement("div");
-      div.className="item";
-      div.innerHTML=`
-        <img src="${v.snippet.thumbnails.medium.url}">
-        <div>
-          <div class="title">${v.snippet.title}</div>
-          <div class="artist">${v.snippet.channelTitle}</div>
-        </div>
-      `;
-      div.onclick=()=>play(v.id.videoId);
-      results.appendChild(div);
-    });
+ fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(term)}&key=${API_KEY}`)
+ .then(r=>r.json())
+ .then(d=>{
+  results.innerHTML="";
+  d.items.forEach(v=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
+      <img src="${v.snippet.thumbnails.medium.url}">
+      <div>
+        <div class="title">${v.snippet.title}</div>
+        <div class="artist">${v.snippet.channelTitle}</div>
+      </div>`;
+    div.onclick=()=>play(v);
+    results.appendChild(div);
   });
+ });
 }
 
-function play(id){
-  player.src =
-    `https://www.youtube.com/embed/${id}?autoplay=1&controls=1`;
+function play(v){
+ current=v;
+ player.src=`https://www.youtube.com/embed/${v.id.videoId}?autoplay=1&controls=0`;
+ document.getElementById("mini").style.display="flex";
+ document.getElementById("miniArt").src=v.snippet.thumbnails.medium.url;
+ document.getElementById("miniTitle").innerText=v.snippet.title;
+ document.getElementById("miniArtist").innerText=v.snippet.channelTitle;
+}
+
+function openFull(){
+ document.getElementById("full").style.display="flex";
+ document.getElementById("fullArt").src=current.snippet.thumbnails.high.url;
+ document.getElementById("fullTitle").innerText=current.snippet.title;
+ document.getElementById("fullArtist").innerText=current.snippet.channelTitle;
+}
+
+function closeFull(){
+ document.getElementById("full").style.display="none";
 }
 </script>
+
 </body>
 </html>
