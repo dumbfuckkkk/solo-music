@@ -7,7 +7,9 @@
 <meta name="theme-color" content="#ffffff">
 
 <style>
-/* ===================== DESIGN TOKENS ===================== */
+/* =====================================================
+   DESIGN SYSTEM
+===================================================== */
 :root{
   --bg:#ffffff;
   --bg-elev:#f5f5f7;
@@ -24,7 +26,9 @@ body.dark{
   --border:#2c2c2e;
 }
 
-/* ===================== BASE ===================== */
+/* =====================================================
+   BASE
+===================================================== */
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -32,37 +36,28 @@ body{
                "Segoe UI",Roboto,system-ui;
   background:var(--bg);
   color:var(--text);
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:transparent;
 }
 iframe{display:none}
 
-/* ===================== SCREENS ===================== */
+/* =====================================================
+   SCREENS
+===================================================== */
 .screen{
   display:none;
   padding:20px;
-  padding-bottom:150px;
+  padding-bottom:160px;
 }
 .screen.active{display:block}
 h1{
   font-size:32px;
   font-weight:700;
-  letter-spacing:-0.5px;
   margin:0 0 16px;
 }
 
-/* ===================== BROWSE ===================== */
-.card{
-  background:var(--bg-elev);
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:16px;
-}
-.card img{
-  width:100%;
-  border-radius:14px;
-}
-
-/* ===================== SEARCH ===================== */
+/* =====================================================
+   SEARCH / LIST
+===================================================== */
 input{
   width:100%;
   padding:14px;
@@ -70,7 +65,6 @@ input{
   border:none;
   background:var(--bg-elev);
   color:var(--text);
-  font-size:16px;
 }
 .item{
   display:flex;
@@ -78,14 +72,14 @@ input{
   padding:14px 0;
 }
 .item img{
-  width:56px;
-  height:56px;
-  border-radius:10px;
+  width:56px;height:56px;border-radius:10px;
 }
-.title{font-size:16px;font-weight:600}
+.title{font-weight:600}
 .artist{font-size:13px;opacity:.7}
 
-/* ===================== MINI PLAYER ===================== */
+/* =====================================================
+   MINI PLAYER
+===================================================== */
 .mini{
   position:fixed;
   bottom:60px;
@@ -98,18 +92,20 @@ input{
   gap:12px;
   padding:10px;
   box-shadow:0 10px 30px rgba(0,0,0,.12);
-  touch-action: pan-x;
+  touch-action:pan-x;
 }
 .mini img{width:42px;height:42px;border-radius:8px}
 .mini button{
   margin-left:auto;
-  border:none;
   background:none;
+  border:none;
   font-size:22px;
   color:var(--accent);
 }
 
-/* ===================== FULL PLAYER ===================== */
+/* =====================================================
+   FULL PLAYER
+===================================================== */
 .full{
   position:fixed;
   inset:0;
@@ -117,7 +113,7 @@ input{
   display:none;
   flex-direction:column;
   padding:16px;
-  touch-action: manipulation;
+  touch-action:manipulation;
 }
 .full img{
   width:80%;
@@ -147,17 +143,18 @@ input[type=range]{
   display:block;
 }
 
-/* ===================== QUEUE ===================== */
-.queue{
-  padding:10px;
-}
+/* =====================================================
+   QUEUE
+===================================================== */
 .queue-item{
   padding:8px 0;
   font-size:14px;
   border-bottom:1px solid var(--border);
 }
 
-/* ===================== TABS ===================== */
+/* =====================================================
+   TABS
+===================================================== */
 .tabs{
   position:fixed;
   bottom:0;
@@ -185,10 +182,7 @@ input[type=range]{
 <!-- BROWSE -->
 <section id="browse" class="screen active">
   <h1>Browse</h1>
-  <div class="card">
-    <img src="https://picsum.photos/600/400">
-    <p>Top music right now</p>
-  </div>
+  <p style="opacity:.6">Music you recently played will appear here.</p>
 </section>
 
 <!-- SEARCH -->
@@ -201,9 +195,7 @@ input[type=range]{
 <!-- LIBRARY -->
 <section id="library" class="screen">
   <h1>Library</h1>
-  <p style="opacity:.6;text-align:center;margin-top:40px">
-    Your played songs will appear here
-  </p>
+  <div id="library"></div>
 </section>
 
 <!-- MINI PLAYER -->
@@ -238,7 +230,7 @@ input[type=range]{
     <span id="repeatBtn" onclick="toggleRepeat()">🔁</span>
   </div>
 
-  <div class="queue" id="queue"></div>
+  <div id="queue"></div>
 </div>
 
 <!-- TABS -->
@@ -249,26 +241,29 @@ input[type=range]{
   <button onclick="toggleTheme()">🌙</button>
 </nav>
 
-<iframe id="player" allow="autoplay"></iframe>
+<div id="player"></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-/* ===================== CONFIG ===================== */
+/* ================= CONFIG ================= */
 const API_KEY="AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
 
-/* ===================== STATE ===================== */
+/* ================= STATE ================= */
 let queue=[], index=-1;
 let shuffle=false;
-let repeat=localStorage.getItem("repeat")||"off";
+let repeat="off";
 let playing=false;
 let yt;
 
-/* ===================== YT API ===================== */
+/* ================= YT API ================= */
 function onYouTubeIframeAPIReady(){
-  yt=new YT.Player("player",{height:"0",width:"0"});
+  yt=new YT.Player("player",{
+    height:"0",width:"0",
+    events:{onStateChange:onPlayerState}
+  });
 }
 
-/* ===================== SEARCH ===================== */
+/* ================= SEARCH ================= */
 q.onkeydown=e=>{if(e.key==="Enter")search(q.value)};
 function search(term){
  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(term)}&key=${API_KEY}`)
@@ -289,13 +284,14 @@ function search(term){
  });
 }
 
-/* ===================== PLAYER ===================== */
+/* ================= PLAYER ================= */
 function add(v){
  queue.push(v);
- if(index===-1){index=0;load()}
+ if(index===-1){index=0;load();}
  renderQueue();
 }
 function load(){
+ if(!yt) return;
  const v=queue[index];
  yt.loadVideoById(v.id.videoId);
  playing=true;
@@ -312,35 +308,33 @@ function load(){
 function togglePlay(){
  playing?yt.pauseVideo():yt.playVideo();
  playing=!playing;
- haptic("light");
+ haptic(10);
 }
 function next(){
- haptic("medium");
+ haptic(25);
  if(shuffle) index=Math.floor(Math.random()*queue.length);
  else if(index<queue.length-1) index++;
  else if(repeat==="all") index=0;
  load();
 }
 function prev(){
- haptic("medium");
- if(index>0) index--;
- load();
+ haptic(25);
+ if(index>0){index--;load();}
 }
 
-/* ===================== SHUFFLE / REPEAT ===================== */
+/* ================= SHUFFLE / REPEAT ================= */
 function toggleShuffle(){
  shuffle=!shuffle;
  shuffleBtn.style.opacity=shuffle?1:.4;
- haptic("light");
+ haptic(10);
 }
 function toggleRepeat(){
  repeat=repeat==="off"?"all":repeat==="all"?"one":"off";
  repeatBtn.innerText=repeat==="one"?"🔂":"🔁";
- localStorage.setItem("repeat",repeat);
- haptic("light");
+ haptic(10);
 }
 
-/* ===================== PROGRESS ===================== */
+/* ================= PROGRESS ================= */
 setInterval(()=>{
  if(!yt||!yt.getDuration) return;
  progress.max=yt.getDuration();
@@ -348,33 +342,28 @@ setInterval(()=>{
 },500);
 progress.oninput=e=>yt.seekTo(e.target.value,true);
 
-/* ===================== QUEUE UI ===================== */
+/* ================= END ================= */
+function onPlayerState(e){
+ if(e.data===0){
+  if(repeat==="one") load();
+  else next();
+ }
+}
+
+/* ================= QUEUE UI ================= */
 function renderQueue(){
- queueEl.innerHTML="";
+ const q=document.getElementById("queue");
+ q.innerHTML="";
  queue.forEach((v,i)=>{
   const d=document.createElement("div");
   d.className="queue-item";
   d.innerText=(i===index?"▶ ":"")+v.snippet.title;
   d.onclick=()=>{index=i;load()};
-  queueEl.appendChild(d);
+  q.appendChild(d);
  });
 }
 
-/* ===================== GESTURES ===================== */
-let sx,sy;
-mini.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY});
-mini.addEventListener("touchend",e=>{
- if(sy-e.changedTouches[0].clientY>40){openFull();haptic("light")}
-});
-full.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY});
-full.addEventListener("touchend",e=>{
- let dx=e.changedTouches[0].clientX-sx;
- let dy=e.changedTouches[0].clientY-sy;
- if(dy>60){closeFull();haptic("light")}
- if(Math.abs(dx)>70){dx<0?next():prev()}
-});
-
-/* ===================== UI ===================== */
+/* ================= UI ================= */
 function openFull(){full.style.display="flex"}
 function closeFull(){full.style.display="none"}
 function show(id,btn){
@@ -383,14 +372,11 @@ function show(id,btn){
  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
  btn.classList.add("active");
 }
-function toggleTheme(){
- document.body.classList.toggle("dark");
-}
+function toggleTheme(){document.body.classList.toggle("dark")}
 
-/* ===================== HAPTICS ===================== */
-function haptic(t){
- if(!navigator.vibrate) return;
- navigator.vibrate(t==="medium"?25:10);
+/* ================= HAPTIC ================= */
+function haptic(ms){
+ if(navigator.vibrate) navigator.vibrate(ms);
 }
 </script>
 </body>
