@@ -1,66 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Solo Music</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 
 <style>
-/* ===================== DESIGN TOKENS ===================== */
 :root{
   --bg:#ffffff;
-  --bg-elev:#f5f5f7;
-  --text:#000;
-  --sub:#666;
-  --border:#ddd;
+  --text:#000000;
+  --muted:#666;
+  --card:#f2f2f2;
 }
-body[data-theme="dark"]{
-  --bg:#000;
-  --bg-elev:#1c1c1e;
-  --text:#fff;
-  --sub:#8e8e93;
-  --border:#2c2c2e;
+.dark{
+  --bg:#0b0b0b;
+  --text:#ffffff;
+  --muted:#aaa;
+  --card:#1a1a1a;
 }
-
-/* ===================== BASE ===================== */
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont;
   background:var(--bg);
   color:var(--text);
-  transition:.3s;
 }
-.hidden{display:none}
-iframe{display:none}
-
-/* ===================== APP ===================== */
 .app{
-  max-width:430px;
+  max-width:420px;
   margin:auto;
-  padding-bottom:150px;
+  padding-bottom:120px;
 }
 header{
   padding:16px;
   font-size:28px;
   font-weight:700;
+  display:flex;
+  justify-content:space-between;
 }
-
-/* ===================== SEARCH ===================== */
+button{
+  border:none;
+  background:none;
+  color:var(--text);
+  font-size:16px;
+}
 .search{
-  padding:0 16px 12px;
+  padding:0 16px;
 }
 .search input{
   width:100%;
   padding:14px;
   border-radius:14px;
   border:none;
-  background:var(--bg-elev);
+  background:var(--card);
   color:var(--text);
+  font-size:16px;
 }
 .list{
-  padding:0 16px;
+  padding:16px;
 }
 .item{
   display:flex;
@@ -73,261 +69,161 @@ header{
   border-radius:10px;
 }
 .title{font-weight:600}
-.artist{font-size:13px;color:var(--sub)}
+.artist{font-size:13px;color:var(--muted)}
 
-/* ===================== MINI PLAYER ===================== */
 .mini{
   position:fixed;
-  left:0;right:0;bottom:60px;
-  background:var(--bg-elev);
-  border-top:1px solid var(--border);
-  padding:12px;
+  bottom:0;
+  left:0;
+  right:0;
+  background:var(--card);
+  padding:10px;
   display:none;
   align-items:center;
-  gap:12px;
-  transition:.25s;
+  gap:10px;
 }
 .mini img{
-  width:44px;height:44px;border-radius:8px;
+  width:44px;
+  height:44px;
+  border-radius:6px;
 }
-.mini .meta{flex:1}
-.mini button{
-  font-size:22px;
-  border:none;
-  background:none;
-  color:var(--text);
-}
+.mini button{font-size:24px}
 
-/* ===================== FULL PLAYER ===================== */
 .full{
   position:fixed;
   inset:0;
   background:var(--bg);
   display:none;
   flex-direction:column;
-  animation:slideUp .25s ease;
 }
-.full::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  filter:blur(40px) brightness(.6);
-  opacity:.6;
-}
-.fullContent{
-  position:relative;
-}
-.full header{
-  padding:16px;
-}
+.full header{font-size:18px}
 .art{
-  width:78%;
+  width:80%;
   margin:20px auto;
-  border-radius:20px;
+  border-radius:14px;
+}
+.slider{
+  width:90%;
+  margin:10px auto;
 }
 .controls{
   display:flex;
   justify-content:center;
-  gap:50px;
+  gap:40px;
   font-size:36px;
 }
 
-/* ===================== TABS ===================== */
-.tabs{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  height:60px;
-  background:var(--bg);
-  border-top:1px solid var(--border);
-  display:flex;
-}
-.tabs button{
-  flex:1;
-  border:none;
-  background:none;
-  color:var(--sub);
-}
-.tabs button.active{color:var(--text);font-weight:600}
-
-/* ===================== ANIMATION ===================== */
-@keyframes slideUp{
-  from{transform:translateY(100%)}
-  to{transform:translateY(0)}
+#player{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
 }
 </style>
 </head>
 
 <body>
+<div class="app">
+  <header>
+    Search
+    <button onclick="toggleTheme()">🌗</button>
+  </header>
 
-<!-- SEARCH -->
-<div class="app" id="searchView">
-  <header>Search</header>
   <div class="search">
     <input id="q" placeholder="Search music">
   </div>
   <div class="list" id="results"></div>
 </div>
 
-<!-- LIBRARY -->
-<div class="app hidden" id="libraryView">
-  <header>Library</header>
-  <div class="list" id="library"></div>
-</div>
-
-<!-- MINI PLAYER -->
 <div class="mini" id="mini">
   <img id="miniArt">
-  <div class="meta">
+  <div>
     <div id="miniTitle" class="title"></div>
     <div id="miniArtist" class="artist"></div>
   </div>
-  <button onclick="toggle()">⏸</button>
+  <button onclick="togglePlay()">⏯</button>
+  <button onclick="openFull()">⬆</button>
 </div>
 
-<!-- FULL PLAYER -->
 <div class="full" id="full">
-  <div class="fullContent">
-    <header onclick="closeFull()">⬇ Now Playing</header>
-    <img id="fullArt" class="art">
-    <div class="title" id="fullTitle" style="text-align:center"></div>
-    <div class="artist" id="fullArtist" style="text-align:center"></div>
-    <div class="controls">
-      <span onclick="prev()">⏮</span>
-      <span onclick="toggle()">⏸</span>
-      <span onclick="next()">⏭</span>
-    </div>
+  <header onclick="closeFull()">⬇ Now Playing</header>
+  <img id="fullArt" class="art">
+  <div class="title" id="fullTitle" style="text-align:center"></div>
+  <div class="artist" id="fullArtist" style="text-align:center"></div>
+  <input type="range" id="progress" class="slider" value="0">
+  <div class="controls">
+    <button onclick="togglePlay()">⏯</button>
   </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs">
-  <button class="active" onclick="show('search')">Search</button>
-  <button onclick="show('library')">Library</button>
-  <button onclick="openFull()">Now Playing</button>
-  <button onclick="toggleTheme()">🌙</button>
-</div>
+<div id="player"></div>
 
-<iframe id="player" allow="autoplay"></iframe>
-
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-const API_KEY="PUT_YOUR_API_KEY_HERE";
+const API_KEY="PASTE_YOUR_KEY";
+let ytPlayer;
+let current;
 
-/* ===================== STATE ===================== */
-let queue=JSON.parse(localStorage.getItem("queue")||"[]");
-let index=-1;
-let muted=false;
+function onYouTubeIframeAPIReady(){
+  ytPlayer=new YT.Player('player',{events:{}});
+}
 
-/* ===================== INIT ===================== */
-document.body.dataset.theme=localStorage.getItem("theme")||"light";
-renderLibrary();
+q.onkeydown=e=>{if(e.key==="Enter")search(q.value)};
 
-/* ===================== SEARCH ===================== */
-q.onkeydown=e=>{
- if(e.key==="Enter") search(q.value);
-};
 function search(term){
- fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=12&q=${encodeURIComponent(term)}&key=${API_KEY}`)
+ fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(term)}&key=${API_KEY}`)
  .then(r=>r.json())
  .then(d=>{
   results.innerHTML="";
   d.items.forEach(v=>{
-   const div=document.createElement("div");
-   div.className="item";
-   div.innerHTML=`
-    <img src="${v.snippet.thumbnails.medium.url}">
-    <div>
-      <div class="title">${v.snippet.title}</div>
-      <div class="artist">${v.snippet.channelTitle}</div>
-    </div>`;
-   div.onclick=()=>addAndPlay(v);
-   results.appendChild(div);
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
+      <img src="${v.snippet.thumbnails.medium.url}">
+      <div>
+        <div class="title">${v.snippet.title}</div>
+        <div class="artist">${v.snippet.channelTitle}</div>
+      </div>`;
+    div.onclick=()=>play(v);
+    results.appendChild(div);
   });
  });
 }
 
-/* ===================== PLAYER ===================== */
-function addAndPlay(v){
- queue.push(v);
- index=queue.length-1;
- save();
- play();
-}
-function play(){
- const v=queue[index];
- player.src=`https://www.youtube.com/embed/${v.id.videoId}?autoplay=1&mute=${muted?1:0}&controls=0`;
+function play(v){
+ current=v;
+ ytPlayer.loadVideoById(v.id.videoId);
  mini.style.display="flex";
  miniArt.src=v.snippet.thumbnails.medium.url;
  miniTitle.innerText=v.snippet.title;
  miniArtist.innerText=v.snippet.channelTitle;
- full.style.setProperty("--bg",`url(${v.snippet.thumbnails.high.url})`);
- full.style.backgroundImage=`url(${v.snippet.thumbnails.high.url})`;
- openFull();
- vibrate();
- renderLibrary();
+ fullArt.src=v.snippet.thumbnails.high.url;
+ fullTitle.innerText=v.snippet.title;
+ fullArtist.innerText=v.snippet.channelTitle;
+ startProgress();
 }
-function toggle(){
- muted=!muted;
- play();
- vibrate();
-}
-function next(){if(index<queue.length-1){index++;play()}}
-function prev(){if(index>0){index--;play()}}
 
-/* ===================== FULL PLAYER ===================== */
+function togglePlay(){
+ const s=ytPlayer.getPlayerState();
+ s===1?ytPlayer.pauseVideo():ytPlayer.playVideo();
+}
+
+function startProgress(){
+ setInterval(()=>{
+  if(!ytPlayer.getDuration)return;
+  progress.max=ytPlayer.getDuration();
+  progress.value=ytPlayer.getCurrentTime();
+ },500);
+}
+
+progress.oninput=()=>ytPlayer.seekTo(progress.value,true);
+
 function openFull(){full.style.display="flex"}
 function closeFull(){full.style.display="none"}
 
-/* ===================== GESTURES ===================== */
-let startY=0;
-full.addEventListener("touchstart",e=>startY=e.touches[0].clientY);
-full.addEventListener("touchend",e=>{
- if(e.changedTouches[0].clientY-startY>120) closeFull();
-});
-
-/* ===================== LIBRARY ===================== */
-function renderLibrary(){
- library.innerHTML="";
- queue.forEach(v=>{
-  const div=document.createElement("div");
-  div.className="item";
-  div.innerHTML=`
-   <img src="${v.snippet.thumbnails.default.url}">
-   <div>
-     <div class="title">${v.snippet.title}</div>
-     <div class="artist">${v.snippet.channelTitle}</div>
-   </div>`;
-  library.appendChild(div);
- });
-}
-
-/* ===================== NAV ===================== */
-function show(v){
- searchView.classList.add("hidden");
- libraryView.classList.add("hidden");
- document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
- if(v==="search"){searchView.classList.remove("hidden");document.querySelectorAll(".tabs button")[0].classList.add("active")}
- if(v==="library"){libraryView.classList.remove("hidden");document.querySelectorAll(".tabs button")[1].classList.add("active")}
-}
-
-/* ===================== THEME ===================== */
 function toggleTheme(){
- const t=document.body.dataset.theme==="dark"?"light":"dark";
- document.body.dataset.theme=t;
- localStorage.setItem("theme",t);
-}
-
-/* ===================== HAPTIC ===================== */
-function vibrate(){
- if(navigator.vibrate) navigator.vibrate(20);
-}
-
-/* ===================== STORAGE ===================== */
-function save(){
- localStorage.setItem("queue",JSON.stringify(queue));
+ document.body.classList.toggle("dark");
 }
 </script>
-
 </body>
 </html>
