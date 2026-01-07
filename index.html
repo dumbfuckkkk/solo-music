@@ -1,180 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Solo Music</title>
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#ffffff">
 
 <style>
-/* =========================================================
-   DESIGN TOKENS
-========================================================= */
+/* ===================== DESIGN TOKENS ===================== */
 :root{
   --bg:#ffffff;
   --bg-elev:#f5f5f7;
-  --text:#000000;
-  --sub:#6e6e73;
-  --accent:#ff2d55;
-  --border:#e5e5ea;
-  --shadow:0 10px 30px rgba(0,0,0,.08);
-  --radius:14px;
+  --text:#000;
+  --sub:#666;
+  --border:#ddd;
 }
-[data-theme="dark"]{
-  --bg:#000000;
+body[data-theme="dark"]{
+  --bg:#000;
   --bg-elev:#1c1c1e;
-  --text:#ffffff;
+  --text:#fff;
   --sub:#8e8e93;
   --border:#2c2c2e;
-  --shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
-/* =========================================================
-   RESET
-========================================================= */
+/* ===================== BASE ===================== */
 *{box-sizing:border-box}
-html,body{
+body{
   margin:0;
-  padding:0;
+  font-family:-apple-system,BlinkMacSystemFont;
   background:var(--bg);
   color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+  transition:.3s;
 }
 .hidden{display:none}
+iframe{display:none}
 
-/* =========================================================
-   LAYOUT
-========================================================= */
+/* ===================== APP ===================== */
 .app{
   max-width:430px;
   margin:auto;
-  padding-bottom:160px;
+  padding-bottom:150px;
 }
 header{
   padding:16px;
   font-size:28px;
   font-weight:700;
 }
-.section{padding:0 16px 12px}
-.card{
-  background:var(--bg-elev);
-  border-radius:var(--radius);
-  padding:12px;
-}
 
-/* =========================================================
-   SEARCH
-========================================================= */
-.searchBox input{
+/* ===================== SEARCH ===================== */
+.search{
+  padding:0 16px 12px;
+}
+.search input{
   width:100%;
   padding:14px;
   border-radius:14px;
   border:none;
   background:var(--bg-elev);
   color:var(--text);
-  font-size:16px;
 }
-.list .item{
+.list{
+  padding:0 16px;
+}
+.item{
   display:flex;
   gap:12px;
   padding:10px 0;
 }
 .item img{
-  width:60px;height:60px;border-radius:10px;
+  width:60px;
+  height:60px;
+  border-radius:10px;
 }
-.title{font-weight:600;font-size:15px}
+.title{font-weight:600}
 .artist{font-size:13px;color:var(--sub)}
 
-/* =========================================================
-   MINI PLAYER
-========================================================= */
+/* ===================== MINI PLAYER ===================== */
 .mini{
   position:fixed;
   left:0;right:0;bottom:60px;
   background:var(--bg-elev);
   border-top:1px solid var(--border);
-  padding:10px 14px;
+  padding:12px;
   display:none;
   align-items:center;
   gap:12px;
-  box-shadow:var(--shadow);
+  transition:.25s;
 }
-.mini img{width:44px;height:44px;border-radius:8px}
+.mini img{
+  width:44px;height:44px;border-radius:8px;
+}
 .mini .meta{flex:1}
 .mini button{
-  font-size:22px;border:none;background:none;color:var(--text)
+  font-size:22px;
+  border:none;
+  background:none;
+  color:var(--text);
 }
 
-/* =========================================================
-   FULL PLAYER
-========================================================= */
+/* ===================== FULL PLAYER ===================== */
 .full{
-  position:fixed;inset:0;
+  position:fixed;
+  inset:0;
   background:var(--bg);
   display:none;
   flex-direction:column;
   animation:slideUp .25s ease;
 }
-.full header{padding:16px;font-size:16px}
+.full::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  filter:blur(40px) brightness(.6);
+  opacity:.6;
+}
+.fullContent{
+  position:relative;
+}
+.full header{
+  padding:16px;
+}
 .art{
-  width:78%;margin:30px auto;border-radius:20px;
+  width:78%;
+  margin:20px auto;
+  border-radius:20px;
 }
 .controls{
-  display:flex;justify-content:center;gap:50px;
+  display:flex;
+  justify-content:center;
+  gap:50px;
   font-size:36px;
 }
-.progress{
-  width:80%;margin:10px auto;
-}
 
-/* =========================================================
-   TABS
-========================================================= */
+/* ===================== TABS ===================== */
 .tabs{
-  position:fixed;bottom:0;left:0;right:0;
-  height:60px;background:var(--bg);
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:60px;
+  background:var(--bg);
   border-top:1px solid var(--border);
   display:flex;
 }
 .tabs button{
-  flex:1;border:none;background:none;
-  font-size:12px;color:var(--sub)
+  flex:1;
+  border:none;
+  background:none;
+  color:var(--sub);
 }
 .tabs button.active{color:var(--text);font-weight:600}
 
-/* =========================================================
-   ANIMATION
-========================================================= */
+/* ===================== ANIMATION ===================== */
 @keyframes slideUp{
   from{transform:translateY(100%)}
   to{transform:translateY(0)}
 }
-
-/* =========================================================
-   IFRAME
-========================================================= */
-iframe{display:none}
 </style>
 </head>
 
-<body data-theme="light">
+<body>
 
-<!-- ===================== SEARCH VIEW ===================== -->
+<!-- SEARCH -->
 <div class="app" id="searchView">
   <header>Search</header>
-  <div class="section searchBox">
+  <div class="search">
     <input id="q" placeholder="Search music">
   </div>
-  <div class="section list" id="results"></div>
+  <div class="list" id="results"></div>
 </div>
 
-<!-- ===================== LIBRARY VIEW ===================== -->
+<!-- LIBRARY -->
 <div class="app hidden" id="libraryView">
   <header>Library</header>
-  <div class="section list" id="library"></div>
+  <div class="list" id="library"></div>
 </div>
 
-<!-- ===================== MINI PLAYER ===================== -->
+<!-- MINI PLAYER -->
 <div class="mini" id="mini">
   <img id="miniArt">
   <div class="meta">
@@ -184,176 +186,148 @@ iframe{display:none}
   <button onclick="toggle()">⏸</button>
 </div>
 
-<!-- ===================== FULL PLAYER ===================== -->
+<!-- FULL PLAYER -->
 <div class="full" id="full">
-  <header onclick="closeFull()">⬇ Now Playing</header>
-  <img id="fullArt" class="art">
-  <div class="title" id="fullTitle" style="text-align:center"></div>
-  <div class="artist" id="fullArtist" style="text-align:center"></div>
-  <input type="range" class="progress" min="0" max="100">
-  <div class="controls">
-    <span onclick="prev()">⏮</span>
-    <span onclick="toggle()">⏸</span>
-    <span onclick="next()">⏭</span>
+  <div class="fullContent">
+    <header onclick="closeFull()">⬇ Now Playing</header>
+    <img id="fullArt" class="art">
+    <div class="title" id="fullTitle" style="text-align:center"></div>
+    <div class="artist" id="fullArtist" style="text-align:center"></div>
+    <div class="controls">
+      <span onclick="prev()">⏮</span>
+      <span onclick="toggle()">⏸</span>
+      <span onclick="next()">⏭</span>
+    </div>
   </div>
 </div>
 
-<!-- ===================== TABS ===================== -->
+<!-- TABS -->
 <div class="tabs">
   <button class="active" onclick="show('search')">Search</button>
   <button onclick="show('library')">Library</button>
   <button onclick="openFull()">Now Playing</button>
+  <button onclick="toggleTheme()">🌙</button>
 </div>
 
 <iframe id="player" allow="autoplay"></iframe>
 
 <script>
-/* =========================================================
-   CONFIG
-========================================================= */
-const API_KEY = "AIzaSyCgBTS9RdzT3nZcmzgYwltu4qf7Jl86WMk";
+const API_KEY="PUT_YOUR_API_KEY_HERE";
 
-/* =========================================================
-   STATE
-========================================================= */
-const state = {
-  queue: JSON.parse(localStorage.getItem("queue")||"[]"),
-  index: -1,
-  muted:false,
-  theme: localStorage.getItem("theme")||"light"
-};
+/* ===================== STATE ===================== */
+let queue=JSON.parse(localStorage.getItem("queue")||"[]");
+let index=-1;
+let muted=false;
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
-const q = document.getElementById("q");
-const results = document.getElementById("results");
-const libraryEl = document.getElementById("library");
-const player = document.getElementById("player");
-
-/* =========================================================
-   INIT
-========================================================= */
-document.body.dataset.theme = state.theme;
+/* ===================== INIT ===================== */
+document.body.dataset.theme=localStorage.getItem("theme")||"light";
 renderLibrary();
 
-/* =========================================================
-   SEARCH
-========================================================= */
+/* ===================== SEARCH ===================== */
 q.onkeydown=e=>{
-  if(e.key==="Enter") search(q.value);
+ if(e.key==="Enter") search(q.value);
 };
-
 function search(term){
- fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=15&q=${encodeURIComponent(term)}&key=${API_KEY}`)
+ fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=10&maxResults=12&q=${encodeURIComponent(term)}&key=${API_KEY}`)
  .then(r=>r.json())
  .then(d=>{
   results.innerHTML="";
   d.items.forEach(v=>{
-    const div=document.createElement("div");
-    div.className="item";
-    div.innerHTML=`
-      <img src="${v.snippet.thumbnails.medium.url}">
-      <div>
-        <div class="title">${v.snippet.title}</div>
-        <div class="artist">${v.snippet.channelTitle}</div>
-      </div>`;
-    div.onclick=()=>addAndPlay(v);
-    results.appendChild(div);
-  });
- });
-}
-
-/* =========================================================
-   QUEUE / PLAYER
-========================================================= */
-function addAndPlay(v){
- state.queue.push(v);
- state.index = state.queue.length-1;
- save();
- playCurrent();
-}
-function playCurrent(){
- const v = state.queue[state.index];
- player.src=`https://www.youtube.com/embed/${v.id.videoId}?autoplay=1&mute=${state.muted?1:0}&controls=0`;
- document.getElementById("mini").style.display="flex";
- document.getElementById("miniArt").src=v.snippet.thumbnails.medium.url;
- document.getElementById("miniTitle").innerText=v.snippet.title;
- document.getElementById("miniArtist").innerText=v.snippet.channelTitle;
- openFull();
- renderLibrary();
-}
-function next(){
- if(state.index < state.queue.length-1){state.index++;playCurrent()}
-}
-function prev(){
- if(state.index > 0){state.index--;playCurrent()}
-}
-function toggle(){
- state.muted=!state.muted;
- const v=state.queue[state.index];
- player.src=`https://www.youtube.com/embed/${v.id.videoId}?autoplay=1&mute=${state.muted?1:0}&controls=0`;
-}
-
-/* =========================================================
-   FULL PLAYER
-========================================================= */
-function openFull(){
- if(state.index<0)return;
- const v=state.queue[state.index];
- document.getElementById("full").style.display="flex";
- document.getElementById("fullArt").src=v.snippet.thumbnails.high.url;
- document.getElementById("fullTitle").innerText=v.snippet.title;
- document.getElementById("fullArtist").innerText=v.snippet.channelTitle;
-}
-function closeFull(){
- document.getElementById("full").style.display="none";
-}
-
-/* =========================================================
-   LIBRARY
-========================================================= */
-function renderLibrary(){
- libraryEl.innerHTML="";
- state.queue.forEach(v=>{
-  const div=document.createElement("div");
-  div.className="item";
-  div.innerHTML=`
-    <img src="${v.snippet.thumbnails.default.url}">
+   const div=document.createElement("div");
+   div.className="item";
+   div.innerHTML=`
+    <img src="${v.snippet.thumbnails.medium.url}">
     <div>
       <div class="title">${v.snippet.title}</div>
       <div class="artist">${v.snippet.channelTitle}</div>
     </div>`;
-  libraryEl.appendChild(div);
+   div.onclick=()=>addAndPlay(v);
+   results.appendChild(div);
+  });
  });
 }
 
-/* =========================================================
-   NAV
-========================================================= */
-function show(view){
- document.getElementById("searchView").classList.add("hidden");
- document.getElementById("libraryView").classList.add("hidden");
- document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
- if(view==="search"){searchView.classList.remove("hidden");document.querySelectorAll(".tabs button")[0].classList.add("active")}
- if(view==="library"){libraryView.classList.remove("hidden");document.querySelectorAll(".tabs button")[1].classList.add("active")}
+/* ===================== PLAYER ===================== */
+function addAndPlay(v){
+ queue.push(v);
+ index=queue.length-1;
+ save();
+ play();
 }
-
-/* =========================================================
-   STORAGE
-========================================================= */
-function save(){
- localStorage.setItem("queue",JSON.stringify(state.queue));
+function play(){
+ const v=queue[index];
+ player.src=`https://www.youtube.com/embed/${v.id.videoId}?autoplay=1&mute=${muted?1:0}&controls=0`;
+ mini.style.display="flex";
+ miniArt.src=v.snippet.thumbnails.medium.url;
+ miniTitle.innerText=v.snippet.title;
+ miniArtist.innerText=v.snippet.channelTitle;
+ full.style.setProperty("--bg",`url(${v.snippet.thumbnails.high.url})`);
+ full.style.backgroundImage=`url(${v.snippet.thumbnails.high.url})`;
+ openFull();
+ vibrate();
+ renderLibrary();
 }
+function toggle(){
+ muted=!muted;
+ play();
+ vibrate();
+}
+function next(){if(index<queue.length-1){index++;play()}}
+function prev(){if(index>0){index--;play()}}
 
-/* =========================================================
-   THEME TOGGLE (LONG PRESS HEADER)
-========================================================= */
-document.querySelector("header").addEventListener("dblclick",()=>{
- state.theme = state.theme==="light"?"dark":"light";
- document.body.dataset.theme=state.theme;
- localStorage.setItem("theme",state.theme);
+/* ===================== FULL PLAYER ===================== */
+function openFull(){full.style.display="flex"}
+function closeFull(){full.style.display="none"}
+
+/* ===================== GESTURES ===================== */
+let startY=0;
+full.addEventListener("touchstart",e=>startY=e.touches[0].clientY);
+full.addEventListener("touchend",e=>{
+ if(e.changedTouches[0].clientY-startY>120) closeFull();
 });
+
+/* ===================== LIBRARY ===================== */
+function renderLibrary(){
+ library.innerHTML="";
+ queue.forEach(v=>{
+  const div=document.createElement("div");
+  div.className="item";
+  div.innerHTML=`
+   <img src="${v.snippet.thumbnails.default.url}">
+   <div>
+     <div class="title">${v.snippet.title}</div>
+     <div class="artist">${v.snippet.channelTitle}</div>
+   </div>`;
+  library.appendChild(div);
+ });
+}
+
+/* ===================== NAV ===================== */
+function show(v){
+ searchView.classList.add("hidden");
+ libraryView.classList.add("hidden");
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+ if(v==="search"){searchView.classList.remove("hidden");document.querySelectorAll(".tabs button")[0].classList.add("active")}
+ if(v==="library"){libraryView.classList.remove("hidden");document.querySelectorAll(".tabs button")[1].classList.add("active")}
+}
+
+/* ===================== THEME ===================== */
+function toggleTheme(){
+ const t=document.body.dataset.theme==="dark"?"light":"dark";
+ document.body.dataset.theme=t;
+ localStorage.setItem("theme",t);
+}
+
+/* ===================== HAPTIC ===================== */
+function vibrate(){
+ if(navigator.vibrate) navigator.vibrate(20);
+}
+
+/* ===================== STORAGE ===================== */
+function save(){
+ localStorage.setItem("queue",JSON.stringify(queue));
+}
 </script>
+
 </body>
 </html>
