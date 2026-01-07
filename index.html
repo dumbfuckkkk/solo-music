@@ -1,109 +1,359 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Solo Music</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 
 <style>
+:root{
+  --bg:#000;
+  --panel:#111;
+  --panel2:#1a1a1a;
+  --text:#fff;
+  --muted:#888;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
-  margin:0;background:#000;color:#fff;
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
-  height:100vh;display:flex;justify-content:center;align-items:center
 }
-.app{
-  width:92vw;max-width:420px;
-  background:#0b0b0b;border-radius:24px;padding:16px;position:relative
+.hidden{display:none}
+main{padding-bottom:160px}
+
+/* Typography */
+h1{font-size:30px;margin:0}
+h2{font-size:24px;margin:0 0 12px}
+h3{font-size:16px;margin:12px 0 6px}
+.muted{color:var(--muted);font-size:13px}
+
+/* Cards */
+.section{padding:16px}
+.card{
+  background:var(--panel);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:16px;
 }
-.art{
-  width:100%;aspect-ratio:1;background:#222;
-  border-radius:18px;margin-bottom:12px;
-  background-size:cover;background-position:center
+
+/* Albums */
+.row{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
 }
-h2{text-align:center;margin:6px 0 2px}
-p{text-align:center;color:#aaa;margin:0;font-size:13px}
-.controls{display:flex;justify-content:center;gap:14px;margin:18px 0}
-.btn{
-  width:52px;height:52px;border-radius:50%;
-  border:none;background:#fff;color:#000;font-size:18px
+.album{
+  width:140px;
+  flex:none;
 }
-.btn:active{transform:scale(.9)}
-.input{
-  width:100%;padding:14px;border-radius:14px;
-  border:none;background:#141414;color:#fff
+.album img{
+  width:140px;
+  height:140px;
+  border-radius:14px;
+  object-fit:cover;
 }
-.queue{text-align:center;font-size:12px;color:#888;margin-top:6px}
-iframe{display:none}
+.album div{font-size:13px;margin-top:4px}
+
+/* Inputs */
+input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-size:15px;
+}
+
+/* Mini Player */
+#mini{
+  position:fixed;
+  left:0;right:0;
+  bottom:64px;
+  height:64px;
+  background:var(--panel2);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  transition:transform .25s ease;
+}
+#mini:active{transform:scale(.97)}
+#mini img{
+  width:44px;height:44px;
+  border-radius:8px;
+}
+#mini .info{flex:1}
+#mini button{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:20px;
+}
+
+/* Tabs */
+#tabs{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:64px;
+  display:flex;
+  background:#000;
+  border-top:1px solid #111;
+}
+#tabs button{
+  flex:1;
+  border:none;
+  background:none;
+  color:#aaa;
+  font-size:12px;
+}
+#tabs button.active{color:#fff}
+
+/* Now Playing */
+#now{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  padding:20px;
+  animation:slideUp .35s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes slideUp{
+  from{transform:translateY(100%)}
+  to{transform:translateY(0)}
+}
+#now img{
+  width:100%;
+  border-radius:18px;
+  margin-bottom:20px;
+  box-shadow:0 30px 60px rgba(0,0,0,.6);
+}
+
+/* Progress */
+#progress{
+  width:100%;
+  height:4px;
+  background:#222;
+  border-radius:4px;
+  overflow:hidden;
+  margin:12px 0;
+}
+#bar{
+  height:100%;
+  width:0%;
+  background:#fff;
+}
+
+/* Controls */
+#controls{
+  display:flex;
+  justify-content:center;
+  gap:28px;
+  margin-top:20px;
+}
+#controls button{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  border:none;
+  font-size:22px;
+}
+
+/* Library */
+.list{
+  background:var(--panel);
+  border-radius:16px;
+  overflow:hidden;
+}
+.item{
+  display:flex;
+  gap:12px;
+  padding:12px;
+  border-bottom:1px solid #222;
+}
+.item img{
+  width:48px;
+  height:48px;
+  border-radius:8px;
+}
+.item:last-child{border-bottom:none}
+
+/* Search */
+.searchbox{margin-bottom:16px}
 </style>
 </head>
 
 <body>
 
-<div class="app">
-  <div class="art" id="art"></div>
+<!-- BROWSE -->
+<main id="browse">
+  <div class="section">
+    <h1>Browse</h1>
 
-  <h2 id="title">Solo Music</h2>
-  <p id="artist">Paste YouTube Link</p>
+    <div class="card" style="padding:0;overflow:hidden">
+      <img src="https://picsum.photos/600/400?music">
+      <div style="padding:14px">
+        <h3>Top Hits</h3>
+        <p class="muted">Updated daily</p>
+      </div>
+    </div>
 
-  <div class="controls">
-    <button class="btn" onclick="prev()">⏮</button>
-    <button class="btn" onclick="play()">▶</button>
-    <button class="btn" onclick="pause()">❚❚</button>
-    <button class="btn" onclick="next()">⏭</button>
+    <h3>Fresh Cuts</h3>
+    <div class="row">
+      <div class="album"><img src="https://picsum.photos/200?1"><div>Album</div></div>
+      <div class="album"><img src="https://picsum.photos/200?2"><div>Album</div></div>
+      <div class="album"><img src="https://picsum.photos/200?3"><div>Album</div></div>
+    </div>
+
+    <div class="card">
+      <p class="muted">Paste YouTube link</p>
+      <input id="link" placeholder="YouTube link"
+        onkeydown="if(event.key==='Enter')add()">
+    </div>
   </div>
+</main>
 
-  <input class="input" id="link" placeholder="Paste YouTube link & press Enter"
-    onkeydown="if(event.key==='Enter')add()">
+<!-- LIBRARY -->
+<main id="library" class="hidden">
+  <div class="section">
+    <h1>Library</h1>
+    <div id="libraryList" class="list"></div>
+  </div>
+</main>
 
-  <div class="queue" id="queue"></div>
-  <div id="player"></div>
+<!-- SEARCH -->
+<main id="search" class="hidden">
+  <div class="section">
+    <h1>Search</h1>
+    <input class="searchbox" placeholder="Paste YouTube link"
+      onkeydown="if(event.key==='Enter')add()">
+    <p class="muted">Search UI ready. API can be added later.</p>
+  </div>
+</main>
+
+<!-- MINI PLAYER -->
+<div id="mini" onclick="openNow()">
+  <img id="thumb">
+  <div class="info">
+    <div id="title">Not Playing</div>
+    <div class="muted">Solo Music</div>
+  </div>
+  <button onclick="event.stopPropagation();toggle()">▶</button>
+</div>
+
+<!-- TABS -->
+<div id="tabs">
+  <button class="active" onclick="show('browse')">Browse</button>
+  <button onclick="show('library')">Library</button>
+  <button onclick="show('search')">Search</button>
+</div>
+
+<!-- NOW PLAYING -->
+<div id="now"
+ ontouchstart="startY=event.touches[0].clientY"
+ ontouchmove="moveNow(event)">
+  <img id="nowArt">
+  <h2 id="nowTitle">Playing</h2>
+  <div id="progress"><div id="bar"></div></div>
+  <div id="controls">
+    <button onclick="prev()">⏮</button>
+    <button onclick="toggle()">▶</button>
+    <button onclick="next()">⏭</button>
+  </div>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player,queue=[],index=-1;
+let player;
+let queue=JSON.parse(localStorage.getItem("queue")||"[]");
+let index=parseInt(localStorage.getItem("index")||"-1");
+let playing=false,startY=0;
 
-function haptic(){if(navigator.vibrate)navigator.vibrate(10);}
+function h(){navigator.vibrate&&navigator.vibrate(8)}
 
 function onYouTubeIframeAPIReady(){
-  player=new YT.Player("player",{height:"0",width:"0",
-    events:{onStateChange:e=>{if(e.data===YT.PlayerState.ENDED)next();}}
+  player=new YT.Player(document.createElement("div"),{
+    events:{onStateChange:e=>playing=e.data===1}
   });
+  if(index>=0)load();
+  setInterval(updateProgress,500);
 }
 
-function extractId(url){
-  const m=url.match(/(youtu\.be\/|v=)([^&]+)/);
-  return m?m[2]:null;
+function extract(u){
+  let m=u.match(/(v=|be\/)([^&]+)/);
+  return m&&m[2];
 }
 
 function add(){
-  const url=document.getElementById("link").value.trim();
-  const id=extractId(url);
-  if(!id)return;
-  queue.push(id);
-  if(index===-1){index=0;load(id);}
-  update();
+  let v=extract(link.value);
+  if(!v)return;
+  queue.push(v);
+  if(index<0)index=0;
+  save();load();renderLibrary();
 }
 
-function load(id){
-  haptic();
-  player.loadVideoById(id);
-  document.getElementById("title").innerText="Playing";
-  document.getElementById("artist").innerText="YouTube Audio";
+function load(){
+  let v=queue[index];
+  let img=`https://img.youtube.com/vi/${v}/hqdefault.jpg`;
+  thumb.src=nowArt.src=img;
+  title.innerText=nowTitle.innerText="YouTube Audio";
+  player.loadVideoById(v);
+  save();h();
 }
 
-function play(){if(player)player.playVideo();}
-function pause(){if(player)player.pauseVideo();}
-function prev(){if(index>0){index--;load(queue[index]);}}
-function next(){if(index<queue.length-1){index++;load(queue[index]);}}
-
-function update(){
-  document.getElementById("queue").innerText=
-    queue.length?`Queue ${index+1}/${queue.length}`:"";
+function toggle(){playing?player.pauseVideo():player.playVideo();h()}
+function next(){if(index<queue.length-1){index++;load()}}
+function prev(){if(index>0){index--;load()}}
+function openNow(){now.style.display="flex"}
+function moveNow(e){
+  let dy=e.touches[0].clientY-startY;
+  now.style.transform=`translateY(${dy}px)`;
+  if(dy>120){
+    now.style.display="none";
+    now.style.transform="translateY(0)";
+    h();
+  }
 }
+
+function save(){
+  localStorage.setItem("queue",JSON.stringify(queue));
+  localStorage.setItem("index",index);
+}
+
+function show(id){
+  browse.classList.add("hidden");
+  library.classList.add("hidden");
+  search.classList.add("hidden");
+  document.getElementById(id).classList.remove("hidden");
+  [...tabs.children].forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+}
+
+function renderLibrary(){
+  libraryList.innerHTML="";
+  queue.forEach(v=>{
+    let img=`https://img.youtube.com/vi/${v}/default.jpg`;
+    libraryList.innerHTML+=`
+      <div class="item">
+        <img src="${img}">
+        <div>YouTube Audio</div>
+      </div>`;
+  });
+}
+
+function updateProgress(){
+  if(!player||!playing)return;
+  let d=player.getDuration();
+  let c=player.getCurrentTime();
+  bar.style.width=(c/d*100)+"%";
+}
+
+renderLibrary();
 </script>
 
 </body>
